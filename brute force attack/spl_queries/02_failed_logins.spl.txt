@@ -1,0 +1,5 @@
+index=main sourcetype=auth_login earliest=0
+| rex "\] (?<status>Failed|Successful) login for user: (?<user>\w+) from IP (?<src_ip>[\d.]+)"
+| eval status=lower(status)
+| where status="failed"
+| table _time, user, src_ip, status
