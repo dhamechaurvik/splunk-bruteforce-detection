@@ -1,0 +1,9 @@
+index=main sourcetype=auth_login earliest=0
+| rex "\] (?<status>Failed|Successful) login for user: (?<user>\w+) from IP (?<src_ip>[\d.]+)"
+| eval status=lower(status)
+| stats count(eval(status="failed")) as failures,
+        count(eval(status="successful")) as successes
+        by src_ip, user
+| where failures >= 4 AND successes >= 1
+| eval alert="ACCOUNT COMPROMISED"
+| table user, src_ip, failures, successes, alert
