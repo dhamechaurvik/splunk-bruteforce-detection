@@ -1,0 +1,5 @@
+index=main sourcetype=auth_login earliest=-5m
+| rex "\] (?<status>Failed|Successful) login for user: (?<user>\w+) from IP (?<src_ip>[\d.]+)"
+| eval status=lower(status)
+| stats count(eval(status="failed")) as failures by src_ip, user
+| where failures >= 4
